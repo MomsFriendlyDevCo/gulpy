@@ -1,0 +1,25 @@
+{
+  "name": "gulpy",
+  "version": "0.0.0",
+  "description": "A series of fixes for small irritations in Gulp",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "gulp",
+    "undertaker"
+  ],
+  "author": "Matt Carter <m@ttcarter.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MomsFriendlyDevCo/gulpy/issues"
+  },
+  "homepage": "https://github.com/MomsFriendlyDevCo/gulpy#readme",
+  "devDependencies": {
+    "@momsfriendlydevco/exec": "^1.3.0",
+    "chai": "^4.2.0",
+    "gulp": "^4.0.1",
+    "mocha": "^6.1.4"
+  }
+}
