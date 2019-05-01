@@ -21,7 +21,7 @@ describe('gulpy', ()=> {
 			.catch(()=> expect.fail('Should not fail to run'))
 	);
 
-	it.skip('should support non-async functions', ()=>
+	it('should support non-async functions', ()=>
 		exec(`gulp -f ${__dirname}/data/nonAsync.gulp.js foo`, {buffer: true})
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
