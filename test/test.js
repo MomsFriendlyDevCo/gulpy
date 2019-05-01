@@ -9,15 +9,16 @@ describe('gulpy', ()=> {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
 				expect(lines).to.deep.equal(['Out:Foo', 'Out:Bar', 'Out:Baz']);
 			})
-			.catch(expect.fail('Should not fail to run'))
+			.catch(()=> expect.fail('Should not fail to run'))
 	});
 
-	it.only('should support call-forwards', ()=> {
-		exec(`gulp -f ${__dirname}/data/callForward.gulp.js foo`, {buffer: true, log: true})
+	it('should support call-forwards', ()=> {
+		exec(`gulp -f ${__dirname}/data/callForward.gulp.js foo`, {buffer: true})
 			.then(res => {
-				console.log('GOT RES', res);
+				var lines = res.split('\n').filter(l => /^Out:/.test(l));
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
 			})
-			.catch(expect.fail('Should not fail to run'))
+			.catch(()=> expect.fail('Should not fail to run'))
 	});
 
 });

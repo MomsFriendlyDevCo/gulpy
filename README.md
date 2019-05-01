@@ -11,6 +11,35 @@ Why?
 * Like any company with a large sprawling codebase we seperate our gulp files up into multiple chunks and sometimes things like calling between these gulp tasks is required. The Gulp@4 standard doesn't really seem to take this into account so the `gulp.task(id, func)` invokation has to been called in an exact order or you get an error. This can be fixed with [some workarounds](https://github.com/gulpjs/undertaker-forward-reference) but even the official Gulp docs say this is likely to be abandoned at some future point.
 
 
+Installation & Usage
+--------------------
+
+1. Simply install the NPM
+
+```
+npm install @momsfriendlydevco/gulpy
+```
+
+
+2. And include at the top of your main gulpfile:
+
+```javascript
+var gulp = require('gulp');
+require('@momsfriendlydevoco/gulpy');
+
+// ...
+```
+
+
+... Alternatively, Gulpy also returns the main gulp instance so if you like you can just import it all at once with:
+
+```javascript
+var gulp = require('@momsfriendlydevoco/gulpy');
+
+// ...
+```
+
+
 Features
 ========
 

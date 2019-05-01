@@ -7,7 +7,6 @@ gulp.series = (...ids) => {
 		...ids.map(id => {
 			if (typeof id == 'string' && !gulp.task(id)) { // Reference and not yet declared?
 				return async ()=> {
-					console.log('RAW CALL', id);
 					return gulp.task(id)();
 				};
 			} else {
@@ -16,3 +15,5 @@ gulp.series = (...ids) => {
 		})
 	);
 }
+
+module.exports = gulp;
