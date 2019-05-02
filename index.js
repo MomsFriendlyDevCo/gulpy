@@ -1,3 +1,4 @@
+var autopsy = require('@momsfriendlydevco/autopsy');
 var debug = require('debug')('gulpy');
 var gulp = require('gulp');
 var util = require('util');
@@ -39,14 +40,9 @@ function Gulpy() {
 				return async ()=> {
 					return this.task(id)();
 				};
-			} else if (typeof id == 'function') {
-				var funcDef = id.toString();
-				if (/^async /.test(funcDef)) { // Already returns a (correct) async function
-					return id;
-				} else {
-					debug('Wrap non-async task', id);
-					return ()=> Promise.resolve(id());
-				}
+			} else if (typeof id == 'function' && autopsy.identify(id) == 'plain') {
+				debug('Wrap non-async task', id);
+				return ()=> Promise.resolve(id());
 			} else {
 				return id;
 			}

@@ -23,6 +23,7 @@
     "mocha": "^6.1.4"
   },
   "dependencies": {
+    "@momsfriendlydevco/autopsy": "^1.0.0",
     "debug": "^4.1.1"
   }
 }
