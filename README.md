@@ -4,6 +4,8 @@ Like [Gulp](https://gulpjs.com) but with a few extras.
 
 This module fixes a few irritations with the new Gulp 4 standard and makes some gulp task definitions easier to read.
 
+The intention here is to remain as-close-as-possible to the actual Gulp release while still supporting some of the nicer syntax (IMHO) of Gulp@3.
+
 
 Why?
 ----
@@ -95,7 +97,7 @@ gulp.task('baz:real', ()=> console.log('Out:Baz'));
 
 
 
-| Slurpy version                        | Gulp@4 equivalent                                 | Description                                             |
+| Gulpy shorthand                       | Gulp@4 equivalent                                 | Description                                             |
 |---------------------------------------|---------------------------------------------------|---------------------------------------------------------|
 | `gulp.task(id, func)`                 | `gulp.task(id, func)`                             | Standard `gulp.task()` usage                            |
 | `gulp.task(id, 'foo')`                | `gulp.task(id, gulp.series('foo'))`               | Redirect a task to another                              |
