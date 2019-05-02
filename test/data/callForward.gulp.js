@@ -1,5 +1,4 @@
-var gulp = require('gulp');
-require('../..');
+var gulp = require('../..');
 
 gulp.task('foo', gulp.series('bar', async ()=> console.log('Out:Foo')));
 gulp.task('bar', gulp.series('baz', async ()=> console.log('Out:Bar')));

@@ -1,65 +1,73 @@
-var debug = require('debug')('slurpy');
+var debug = require('debug')('gulpy');
 var gulp = require('gulp');
+var util = require('util');
 
-// Wrap gulp.task {{{
-gulp._gulpyRawTask = gulp.task;
-gulp.task = (id, ...chain) => {
-	if (id && !arguments.length) { // Just use as lookup
-		surpy('task ask', id);
-		return gulp._gulpyRawTask(id);
-	} else if (id && chain.length == 1 && typeof chain[0] == 'function') { // Standard gulp.task() call
-		console.log('task standard', id);
-		return gulp._gulpyRawTask(id, chain[0]);
-	} else if (id && chain.length == 1 && Array.isArray(chain[0])) { // Chain redirector - gulp.task(id, ['foo', 'bar', 'baz'])
-		console.log('task chain redirect', id, chain[0]);
-		return gulp._gulpyRawTask(id, gulp.series(...chain[0]));
-	} else if (id && chain.length == 1 && typeof chain[0] == 'string') { // Task redirector - gulp.task(id, 'foo')
-		console.log('task redirect', id, chain[0]);
-		return gulp._gulpyRawTask(id, gulp.series(chain[0]));
-	} else if (id && Array.isArray(chain[0]) && typeof chain[1] == 'function') { // Function with prerequisites - gulp.task(id, ['foo'], func)
-		console.log('task chain prerequisite', id, chain[0]);
-		return gulp._gulpyRawTask(id, gulp.series(...chain[0], chain[1]));
-	} else {
-		console.log('task chain', id, chain);
-		return gulp._gulpyRawTask(id, gulp.series(...chain));
-	}
-};
-// }}}
+function Gulpy() {
+	this.gulp = gulp; // Inherit the regular gulp instance into gulpy.gulp
 
-// Utility wrapper for series / parallel to return a call-forward task {{{
-gulp.wrapFuncs = ids =>
-	ids.map(id => {
-		if (typeof id == 'string' && !gulp._gulpyRawTask(id)) { // Reference and not yet declared?
-			return async ()=> {
-				return gulp._gulpyRawTask(id)();
-			};
-		} else if (typeof id == 'function') {
-			var funcDef = id.toString();
-			if (/^async /.test(funcDef)) { // Already returns a (correct) async function
-				return id;
-			} else {
-				return ()=> Promise.resolve(id());
-			}
+	// Wrap gulp.task {{{
+	this.task = (id, ...chain) => {
+		if (id && !chain.length) { // Just use as lookup
+			debug('task ask', id);
+			return this.gulp.task(id);
+		} else if (id && chain.length == 1 && typeof chain[0] == 'function') { // Standard gulp.task() call
+			debug('task standard define', id, chain[0]);
+			return this.gulp.task(id, chain[0]);
+		} else if (id && chain.length == 1 && Array.isArray(chain[0])) { // Chain redirector - gulp.task(id, ['foo', 'bar', 'baz'])
+			debug('task chain redirect', id, chain[0]);
+			return this.gulp.task(id, this.series(...chain[0]));
+		} else if (id && chain.length == 1 && typeof chain[0] == 'string') { // Task redirector - gulp.task(id, 'foo')
+			debug('task redirect', id, chain[0]);
+			return this.gulp.task(id, this.series(chain[0]));
+		} else if (id && Array.isArray(chain[0]) && typeof chain[1] == 'function') { // Function with prerequisites - gulp.task(id, ['foo'], func)
+			debug('task chain prerequisite', id, chain[0]);
+			return this.gulp.task(id, this.series(...chain[0], chain[1]));
 		} else {
-			return id;
+			debug('task chain', id, chain);
+			return this.gulp.task(id, this.series(...chain));
 		}
-	});
-// }}}
 
-// Wrap gulp.parallel {{{
-gulp._gulpyRawParallel = gulp.parallel;
-gulp.parallel = (...ids) =>
-	gulp._gulpyRawParallel(
-		...gulp.wrapFuncs(ids)
-	);
-// }}}
+		return this;
+	};
+	// }}}
 
-// Wrap gulp.series {{{
-gulp._gulpyRawSeries = gulp.series;
-gulp.series = (...ids) =>
-	gulp._gulpyRawSeries(
-		...gulp.wrapFuncs(ids)
-	);
-// }}}
+	// Utility wrapper for series / parallel to return a call-forward task {{{
+	this.wrapFuncs = ids =>
+		ids.map(id => {
+			if (typeof id == 'string' && !this.gulp.task(id)) { // Reference and not yet declared?
+				debug('Wrap call-forward task', id);
+				return async ()=> {
+					return this.task(id)();
+				};
+			} else if (typeof id == 'function') {
+				var funcDef = id.toString();
+				if (/^async /.test(funcDef)) { // Already returns a (correct) async function
+					return id;
+				} else {
+					debug('Wrap non-async task', id);
+					return ()=> Promise.resolve(id());
+				}
+			} else {
+				return id;
+			}
+		});
+	// }}}
 
-module.exports = gulp;
+	// Wrap gulp.parallel {{{
+	this.parallel = (...ids) =>
+		this.gulp.parallel(
+			...this.wrapFuncs(ids)
+		);
+	// }}}
+
+	// Wrap gulp.series {{{
+	this.series = (...ids) =>
+		this.gulp.series(
+			...this.wrapFuncs(ids)
+		);
+	// }}}
+
+	return this;
+};
+
+module.exports = new Gulpy();

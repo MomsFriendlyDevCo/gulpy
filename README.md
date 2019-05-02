@@ -15,6 +15,7 @@ Why?
 
 Installation & Usage
 --------------------
+This module works as a mixin of Gulp. Set your `gulp` instance to it to inherit regular Gulp behaviour as well as the extra features and fixes of this module.
 
 1. Simply install the NPM
 
@@ -23,22 +24,23 @@ npm install @momsfriendlydevco/gulpy
 ```
 
 
-2. And include at the top of your main gulpfile:
-
-```javascript
-var gulp = require('gulp');
-require('@momsfriendlydevoco/gulpy');
-
-// ...
-```
-
-
-... Alternatively, Gulpy also returns the main gulp instance so if you like you can just import it all at once with:
+2. And include at the top of your main gulpfile where you would normally reference `gulp`:
 
 ```javascript
 var gulp = require('@momsfriendlydevoco/gulpy');
 
-// ...
+gulp.task(id, func); // etc...
+```
+
+
+Debugging
+---------
+This module uses the [Debug NPM package](https://github.com/visionmedia/debug#readme) and responds to `gulpy`.
+
+To see verbose debugging output simply set `DEBUG=gulpy` or any valid glob expression.
+
+```
+> DEBUG=gulpy gulp taskID
 ```
 
 
@@ -52,8 +54,7 @@ Calling a task that hasn't been defined yet is now wrapped in a function which d
 
 
 ```javascript
-var gulp = require('gulp');
-require('@momsfriendlydevco/gulpy');
+var gulp = require('@momsfriendlydevco/gulpy');
 
 gulp.task('foo', gulp.series('bar', async ()=> console.log('Out:Foo')));
 gulp.task('bar', gulp.series('baz', async ()=> console.log('Out:Bar')));
@@ -69,8 +70,7 @@ No idea why Gulp@4 demands this but if you declare a Gulp task without the magic
 
 
 ```javascript
-var gulp = require('gulp');
-require('@momsfriendlydevco/gulpy');
+var gulp = require('@momsfriendlydevco/gulpy');
 
 gulp.task('foo', gulp.series('bar', ()=> console.log('Out:Foo')));
 gulp.task('bar', gulp.series('baz', ()=> console.log('Out:Bar')));
@@ -81,6 +81,18 @@ gulp.task('baz', ()=> console.log('Out:Baz'));
 Task chaining
 -------------
 Easily specify task-prerequisites and execution order.
+
+
+```javascript
+var gulp = require('@momsfriendlydevco/gulpy');
+
+gulp.task('default', ['foo']);
+gulp.task('foo', 'bar', ()=> console.log('Out:Foo'));
+gulp.task('bar', ['baz'], ()=> console.log('Out:Bar'));
+gulp.task('baz', 'baz:real');
+gulp.task('baz:real', ()=> console.log('Out:Baz'));
+```
+
 
 
 | Slurpy version                        | Gulp@4 equivalent                                 | Description                                             |
