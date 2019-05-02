@@ -30,4 +30,13 @@ describe('gulpy', ()=> {
 			.catch(()=> expect.fail('Should not fail to run'))
 	);
 
+	it('should support chained task declarations', ()=>
+		exec(`gulp -f ${__dirname}/data/chain.gulp.js`, {buffer: true})
+			.then(res => {
+				var lines = res.split('\n').filter(l => /^Out:/.test(l));
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
+			})
+			.catch(()=> expect.fail('Should not fail to run'))
+	);
+
 });

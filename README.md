@@ -10,6 +10,7 @@ Why?
 
 * **Call-forwards** - Like any company with a large sprawling codebase we separate our gulp files up into multiple chunks and sometimes things like calling between these gulp tasks is required. The Gulp@4 standard doesn't really seem to take this into account so the `gulp.task(id, func)` invocation has to been called in an exact order or you get an error. This can be fixed with [some workarounds](https://github.com/gulpjs/undertaker-forward-reference) but even the official Gulp docs say this is likely to be abandoned at some future point.
 * **Non-Async functions** - I honestly see no earthly reason why Gulp@4 now insists that all functions should be async except as an aesthetic choice. Forgetting to add the magical `async` bit before a function when it just returns an inline operation seems extremely arbitrary.
+* **Task prerequisites** - Yes I know you can use `gulp.task(id, gulp.series(foo, bar, baz))` to show the execution order but if the last one of these is a function things get messy. I much prefer the `gulp.task(id, [prereqs...], func)` way of doing things
 
 
 Installation & Usage
@@ -75,3 +76,16 @@ gulp.task('foo', gulp.series('bar', ()=> console.log('Out:Foo')));
 gulp.task('bar', gulp.series('baz', ()=> console.log('Out:Bar')));
 gulp.task('baz', ()=> console.log('Out:Baz'));
 ```
+
+
+Task chaining
+-------------
+Easily specify task-prerequisites and execution order.
+
+
+| Slurpy version                        | Gulp@4 equivalent                                 | Description                                             |
+|---------------------------------------|---------------------------------------------------|---------------------------------------------------------|
+| `gulp.task(id, func)`                 | `gulp.task(id, func)`                             | Standard `gulp.task()` usage                            |
+| `gulp.task(id, 'foo')`                | `gulp.task(id, gulp.series('foo'))`               | Redirect a task to another                              |
+| `gulp.task(id, 'foo', 'bar')`         | `gulp.task(id, gulp.series('foo', 'bar'))`        | Set up a chain of tasks to be run in series by their ID |
+| `gulp.task(id, ['foo', 'bar'], func)` | `gulp.task(id, gulp.series('foo', 'bar'', func))` | Run a task with prerequisites                           |
