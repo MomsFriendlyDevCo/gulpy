@@ -7,7 +7,7 @@ function Gulpy() {
 	this.gulp = gulp; // Inherit the regular gulp instance into gulpy.gulp
 	this.isGulpy = true; // Marker so we know if the original gulp instance has already been mutated
 
-	// Wrap gulp.task() {{{
+	// gulp.task() {{{
 	this.task = (id, ...chain) => {
 		if (id && !chain.length) { // Just use as lookup
 			debug('task ask', id);
@@ -80,6 +80,10 @@ function Gulpy() {
 		);
 	// }}}
 
+	// gulp.start() {{{
+	gulp.start = gulp.series;
+	// }}}
+
 	return this;
 };
 
@@ -87,7 +91,7 @@ var inst = new Gulpy();
 inst.mutate = ()=> {
 	if (gulp.isGulpy) return gulp; // Already mutated
 
-	inst.gulp = {...gulp};
+	inst.gulp = {...gulp}; // Shallow copy of gulp so we can reassign the original pointers
 
 	['task', 'parallel', 'series'].forEach(f => {
 		var originalFunc = gulp[f];
