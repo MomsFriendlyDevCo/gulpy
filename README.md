@@ -10,9 +10,10 @@ The intention here is to remain as-close-as-possible to the actual Gulp release 
 Why?
 ----
 
-* **Call-forwards** - Like any company with a large sprawling codebase we separate our gulp files up into multiple chunks and sometimes things like calling between these gulp tasks is required. The Gulp@4 standard doesn't really seem to take this into account so the `gulp.task(id, func)` invocation has to been called in an exact order or you get an error. This can be fixed with [some workarounds](https://github.com/gulpjs/undertaker-forward-reference) but even the official Gulp docs say this is likely to be abandoned at some future point.
+* **Call-forwards** - Like any company with a large sprawling codebase we separate our gulp files up into multiple chunks and sometimes things like calling between these gulp tasks is required. The Gulp@4 standard doesn't really seem to take this into account so the `gulp.task(id, func)` invocation has to be called in an exact order or you get an error. This can be fixed with [some workarounds](https://github.com/gulpjs/undertaker-forward-reference) but even the official Gulp docs say this is likely to be abandoned at some future point.
 * **Non-Async functions** - I honestly see no earthly reason why Gulp@4 now insists that all functions should be async except as an aesthetic choice. Forgetting to add the magical `async` bit before a function when it just returns an inline operation seems extremely arbitrary.
 * **Task prerequisites** - Yes I know you can use `gulp.task(id, gulp.series(foo, bar, baz))` to show the execution order but if the last one of these is a function things get messy. I much prefer the `gulp.task(id, [prereqs...], func)` way of doing things
+* **Run-once tasks** - An easier way to specify that a task should be executed only once, even if called multiple times as a pre-requisite.
 
 
 Installation & Usage
@@ -103,3 +104,39 @@ gulp.task('baz:real', ()=> console.log('Out:Baz'));
 | `gulp.task(id, 'foo')`                | `gulp.task(id, gulp.series('foo'))`               | Redirect a task to another                              |
 | `gulp.task(id, 'foo', 'bar')`         | `gulp.task(id, gulp.series('foo', 'bar'))`        | Set up a chain of tasks to be run in series by their ID |
 | `gulp.task(id, ['foo', 'bar'], func)` | `gulp.task(id, gulp.series('foo', 'bar'', func))` | Run a task with prerequisites                           |
+
+
+
+Run-once
+--------
+To specify that a task should be run only once during the life of the Gulp process simply suffix each `.task` call with `.once`:
+
+```javascript
+gulp.task.once('setup', ()=> ...);
+gulp.task('foo', ['setup'], ()=> ...);
+gulp.task('bar', ['setup'], ()=> ...);
+gulp.task('build', ['foo', 'bar']); // 'setup' runs only once, followed by 'foo', 'bar', in parallel
+```
+
+
+
+API
+===
+This module is a mixin to Gulp which extends some existing Gulp functions to work with the features listed above.
+It also provides the following extra functionality in addition to the standard Gulp API.
+
+
+gulpy.isGulpy
+-------------
+Always true, this can be used as a check to see if `gulpy.mutate()` has been called. If it has then `gulp.isGulpy` will also be true.
+
+
+gulpy.mutate()
+--------------
+Overwrite the gulpy mutated functions in the `gulp`, effectively turning every `reuiqre('gulp')` call into `require('@momsfriendlydevco/gulpy')`.
+Only use this if you know what you are doing as this may have side-effects with downstream modules.
+
+
+gulpy.gulp
+----------
+The original gulp instance if raw access is required.

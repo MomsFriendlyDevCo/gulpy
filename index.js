@@ -5,8 +5,9 @@ var util = require('util');
 
 function Gulpy() {
 	this.gulp = gulp; // Inherit the regular gulp instance into gulpy.gulp
+	this.isGulpy = true; // Marker so we know if the original gulp instance has already been mutated
 
-	// Wrap gulp.task {{{
+	// Wrap gulp.task() {{{
 	this.task = (id, ...chain) => {
 		if (id && !chain.length) { // Just use as lookup
 			debug('task ask', id);
@@ -29,6 +30,22 @@ function Gulpy() {
 		}
 
 		return this;
+	};
+	// }}}
+
+	// gulp.task.once() {{{
+	this.task.once = (id, ...chain) => {
+		var func = chain[chain.length-1];
+		if (typeof func != 'function') throw new Error('The last argument to gulp.task.once(id, [prereqs], func) must be a function');
+
+		var hasRun = false;
+		chain[chain.length-1] = async ()=> {
+			if (hasRun) return;
+			hasRun = true;
+			return func();
+		};
+
+		return this.task(id, ...chain);
 	};
 	// }}}
 
@@ -66,4 +83,18 @@ function Gulpy() {
 	return this;
 };
 
-module.exports = new Gulpy();
+var inst = new Gulpy();
+inst.mutate = ()=> {
+	if (gulp.isGulpy) return gulp; // Already mutated
+	['isGulpy', 'task', 'parallel', 'series'].forEach(f => {
+		inst.gulp = gulp;
+		gulp[f] = inst[f];
+	});
+
+	// console.log('GT', inst.gulp.task.toString());
+	//console.log('GuT', inst.task.toString());
+	//console.log('MT', gulp.task.toString());
+	return inst;
+};
+
+module.exports = inst;
