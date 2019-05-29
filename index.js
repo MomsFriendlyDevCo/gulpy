@@ -86,14 +86,17 @@ function Gulpy() {
 var inst = new Gulpy();
 inst.mutate = ()=> {
 	if (gulp.isGulpy) return gulp; // Already mutated
-	['isGulpy', 'task', 'parallel', 'series'].forEach(f => {
-		inst.gulp = gulp;
+
+	inst.gulp = {...gulp};
+
+	['task', 'parallel', 'series'].forEach(f => {
+		var originalFunc = gulp[f];
 		gulp[f] = inst[f];
+		inst.gulp[f] = originalFunc;
 	});
 
-	// console.log('GT', inst.gulp.task.toString());
-	//console.log('GuT', inst.task.toString());
-	//console.log('MT', gulp.task.toString());
+	gulp.isGulpy = true; // Mark as a mutated gulp(y) object
+
 	return inst;
 };
 
