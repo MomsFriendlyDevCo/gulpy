@@ -52,14 +52,19 @@ function Gulpy() {
 	// Utility wrapper for series / parallel to return a call-forward task {{{
 	this.wrapFuncs = ids =>
 		ids.map(id => {
+			var wrapper;
 			if (typeof id == 'string' && !this.gulp.task(id)) { // Reference and not yet declared?
 				debug('Wrap call-forward task', id);
-				return async ()=> {
+				wrapper = async ()=> {
 					return this.task(id)();
 				};
+				if (typeof id == 'string') wrapper.displayName = id;
+				return wrapper;
 			} else if (typeof id == 'function' && autopsy.identify(id) == 'plain') {
 				debug('Wrap non-async task', id);
-				return ()=> Promise.resolve(id());
+				wrapper = ()=> Promise.resolve(id());
+				if (typeof id == 'string') wrapper.displayName = id;
+				return wrapper;
 			} else {
 				return id;
 			}
