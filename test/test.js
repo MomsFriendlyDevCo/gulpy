@@ -1,7 +1,15 @@
 var expect = require('chai').expect;
 var exec = require('@momsfriendlydevco/exec');
+var gulp = require('gulp');
+var gulpy = require('..');
 
 describe('gulpy', ()=> {
+
+	it('should look like the main gulp module', ()=> {
+		var excludeMethods = ['isGulpy', 'gulp', 'mutate', 'start', 'wrapFuncs'];
+
+		expect(Object.keys(gulpy).sort().filter(m => !excludeMethods.includes(m))).to.be.deep.equal(Object.keys(gulp).sort());
+	});
 
 	it('should work with a standard gulpfile', ()=>
 		exec(`gulp -f ${__dirname}/data/standard.gulp.js baz`, {buffer: true})
@@ -65,7 +73,6 @@ describe('gulp.task.once()', ()=> {
 });
 
 describe('gulpy.mutate', ()=> {
-	var gulp = require('gulp');
 
 	it('should not have mutated the original gulp instance', ()=> {
 		expect(gulp.isGulpy).to.not.be.ok;

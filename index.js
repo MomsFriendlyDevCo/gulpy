@@ -6,6 +6,7 @@ var util = require('util');
 function Gulpy() {
 	this.gulp = gulp; // Inherit the regular gulp instance into gulpy.gulp
 	this.isGulpy = true; // Marker so we know if the original gulp instance has already been mutated
+	Object.assign(this, gulp); // Act like gulp
 
 	// gulp.task() {{{
 	this.task = (id, ...chain) => {
