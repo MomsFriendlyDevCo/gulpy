@@ -59,12 +59,12 @@ function Gulpy() {
 				wrapper = async ()=> {
 					return this.task(id)();
 				};
-				if (typeof id == 'string') wrapper.displayName = id;
+				wrapper.displayName = typeof id == 'string' ? id : '<task>';
 				return wrapper;
 			} else if (typeof id == 'function' && autopsy.identify(id) == 'plain') {
 				debug('Wrap non-async task', id);
 				wrapper = ()=> Promise.resolve(id());
-				if (typeof id == 'string') wrapper.displayName = id;
+				wrapper.displayName = typeof id == 'string' ? id : '<task>';
 				return wrapper;
 			} else {
 				return id;
