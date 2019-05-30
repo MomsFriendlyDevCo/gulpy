@@ -137,6 +137,11 @@ Overwrite the gulpy mutated functions in the `gulp`, effectively turning every `
 Only use this if you know what you are doing as this may have side-effects with downstream modules.
 
 
+gulpy.start(...tasks)
+---------------------
+Convenience method for running tasks in series immediately.
+
+
 gulpy.gulp
 ----------
 The original gulp instance if raw access is required.
