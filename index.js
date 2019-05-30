@@ -81,7 +81,7 @@ function Gulpy() {
 	// }}}
 
 	// gulp.start() {{{
-	gulp.start = gulp.series;
+	gulp.start = (...args) => gulp.series(...args)();
 	// }}}
 
 	return this;
