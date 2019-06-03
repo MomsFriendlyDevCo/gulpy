@@ -6,7 +6,7 @@ var gulpy = require('..');
 describe('gulpy', ()=> {
 
 	it('should look like the main gulp module', ()=> {
-		var excludeMethods = ['isGulpy', 'gulp', 'mutate', 'start', 'wrapFuncs'];
+		var excludeMethods = ['isGulpy', 'emit', 'gulp', 'mutate', 'off', 'on', 'once', 'start', 'wrapFuncs'];
 
 		expect(Object.keys(gulpy).sort().filter(m => !excludeMethods.includes(m))).to.be.deep.equal(Object.keys(gulp).sort());
 	});
@@ -43,6 +43,15 @@ describe('gulpy', ()=> {
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
 				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
+			})
+			.catch(()=> expect.fail('Should not fail to run'))
+	);
+
+	it('should emit the "finish" event when all done', ()=>
+		exec(`gulp -f ${__dirname}/data/event-finish.gulp.js`, {buffer: true})
+			.then(res => {
+				var lines = res.split('\n').filter(l => /^Out:/.test(l));
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar', 'Out:Finish']);
 			})
 			.catch(()=> expect.fail('Should not fail to run'))
 	);

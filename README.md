@@ -14,6 +14,7 @@ Why?
 * **Non-Async functions** - I honestly see no earthly reason why Gulp@4 now insists that all functions should be async except as an aesthetic choice. Forgetting to add the magical `async` bit before a function when it just returns an inline operation seems extremely arbitrary.
 * **Task prerequisites** - Yes I know you can use `gulp.task(id, gulp.series(foo, bar, baz))` to show the execution order but if the last one of these is a function things get messy. I much prefer the `gulp.task(id, [prereqs...], func)` way of doing things
 * **Run-once tasks** - An easier way to specify that a task should be executed only once, even if called multiple times as a pre-requisite.
+* **Emit "finish" event for cleanup** - I've honestly no idea how [cleaning up after multiple tasks is not a problem to solve](https://github.com/gulpjs/gulp/issues/1275) but disconnecting from the database and so on should be handled properly
 
 
 Installation & Usage
@@ -118,6 +119,14 @@ gulp.task('bar', ['setup'], ()=> ...);
 gulp.task('build', ['foo', 'bar']); // 'setup' runs only once, followed by 'foo', 'bar', in parallel
 ```
 
+
+Event: Finish
+-------------
+Gulpy adds the universal "finish" event to signal that all tasks have completed and that cleanup can be conducted.
+
+```javascript
+gulp.on('finish', ()=> ...)
+```
 
 
 API

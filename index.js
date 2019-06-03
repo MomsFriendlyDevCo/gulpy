@@ -90,6 +90,17 @@ function Gulpy() {
 	this.start = (...args) => gulp.series(...args)();
 	// }}}
 
+	// Event: finish {{{
+	var running = new Set();
+	this.gulp.on('start', task => running.add(task.uid));
+	this.gulp.on('stop', task => {
+		running.delete(task.uid);
+		if (!running.size) this.gulp.emit('finish');
+	});
+
+	['on', 'once', 'off', 'emit'].forEach(m => this[m] = this.gulp[m]);
+	// }}}
+
 	return this;
 };
 
