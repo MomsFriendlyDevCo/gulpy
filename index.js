@@ -92,10 +92,16 @@ function Gulpy() {
 
 	// Event: finish {{{
 	var running = new Set();
+	var runningTimer;
 	this.gulp.on('start', task => running.add(task.uid));
 	this.gulp.on('stop', task => {
 		running.delete(task.uid);
-		if (!running.size) this.emit('finish');
+
+		if (runningTimer) clearTimeout(runningTimer);
+		runningTimer = setTimeout(()=> { // Queue on next tick so we're sure Gulp has flushed
+			if (running.size) return; // Another task has waited within the tick
+			this.emit('finish')
+		}, 200)
 	});
 
 	['on', 'once', 'off', 'emit'].forEach(m => this[m] = this.gulp[m]);
