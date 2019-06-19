@@ -101,7 +101,7 @@ function Gulpy() {
 		runningTimer = setTimeout(()=> { // Queue on next tick so we're sure Gulp has flushed
 			if (running.size) return; // Another task has waited within the tick
 			this.emit('finish')
-		}, 200)
+		}, 1000) // FIXME: This wait is way too long but required as some processes close off resources like DB connections before they should
 	});
 
 	['on', 'once', 'off', 'emit'].forEach(m => this[m] = this.gulp[m]);
