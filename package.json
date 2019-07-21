@@ -17,10 +17,11 @@
   },
   "homepage": "https://github.com/MomsFriendlyDevCo/gulpy#readme",
   "devDependencies": {
-    "@momsfriendlydevco/exec": "^1.4.1",
+    "@momsfriendlydevco/exec": "^1.4.3",
     "chai": "^4.2.0",
     "gulp": "^4.0.2",
-    "mocha": "^6.2.0"
+    "mocha": "^6.2.0",
+    "mocha-logger": "^1.0.6"
   },
   "dependencies": {
     "@momsfriendlydevco/autopsy": "^1.0.0",
