@@ -8,9 +8,9 @@ describe('gulpy', ()=> {
 	before(()=> require('./setup'));
 
 	it('should look like the main gulp module', ()=> {
-		var excludeMethods = ['isGulpy', 'emit', 'gulp', 'mutate', 'off', 'on', 'once', 'start', 'wrapFuncs'];
+		var excludeMethods = ['isGulpy', 'emit', 'gulp', 'mutate', 'off', 'on', 'once', 'run', 'settings', 'start'];
 
-		expect(Object.keys(gulpy).sort().filter(m => !excludeMethods.includes(m))).to.be.deep.equal(Object.keys(gulp).sort());
+		expect(Object.keys(gulpy).sort().filter(m => !excludeMethods.includes(m))).to.be.deep.equal(Object.keys(gulp).sort().filter(m => !excludeMethods.includes(m)));
 	});
 
 	it('should work with a standard gulpfile', ()=>
@@ -25,7 +25,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/callForward.gulp.js foo`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
 			})
 	);
 
@@ -33,7 +33,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/nonAsync.gulp.js foo`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
 			})
 	);
 
@@ -41,7 +41,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/chain.gulp.js`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
 			})
 	);
 
@@ -49,7 +49,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/event-finish.gulp.js`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar', 'Out:Finish']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo', 'Out:Finish']);
 			})
 	);
 

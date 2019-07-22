@@ -146,9 +146,50 @@ Overwrite the gulpy mutated functions in the `gulp`, effectively turning every `
 Only use this if you know what you are doing as this may have side-effects with downstream modules.
 
 
+gulpy.run(...tasks)
+-------------------
+Inline replacement for `gulp.series()` and `gulp.parallel()`.
+This funciton is used to process all arguments after the task alias in `gulp.task()`
+
+This function can take any number of the following arguments:
+
+* (string) already declared tasks
+* (string) future tasks (i.e. not yet present)
+* Async functions
+* Promises + Promise factories
+* Callback functions
+* Plain functions
+* Array of any of the above (child items executed in parallel)
+
+
+```javascript
+// Run 'Foo' then 'Bar', then 'Baz'
+gulp.run('foo', 'bar', 'baz');
+
+// Run 'Foo' then 'Bar' + 'Baz' (the latter two in parallel
+gulp.run('foo', ['bar', 'baz']);
+
+// Declare a task 'foo' which runs 'bar' then 'baz' + 'quz' in parallel
+gulp.task('foo', 'bar', ['baz', 'quz']);
+```
+
+
 gulpy.start(...tasks)
 ---------------------
-Convenience method for running tasks in series immediately.
+Alias of `gulp.run()`
+
+
+gulpy.settings
+--------------
+Object of settings used by Gulpy.
+
+Available options:
+
+| Setting           | Type   | Default | Description                                                                          |
+|-------------------|--------|---------|--------------------------------------------------------------------------------------|
+| `futureTaskTries` | Number | `20`    | How many tries before giving up on finding a future task alias as-yet-to-be-declared |
+| `futureTaskWait`  | Number | `50`    | The millisecond wait between each future task alias attempt                          |
+
 
 
 gulpy.gulp
