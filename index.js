@@ -1,4 +1,5 @@
 var autopsy = require('@momsfriendlydevco/autopsy');
+var chalk = require('chalk');
 var debug = require('debug')('gulpy');
 var gulp = require('gulp');
 var util = require('util');
@@ -8,9 +9,21 @@ function Gulpy() {
 	this.isGulpy = true; // Marker so we know if the original gulp instance has already been mutated
 	Object.assign(this, gulp); // Act like gulp
 
+	gulp.log = (...msg) => {
+		var now = new Date();
+		console.log(
+			'[' + gulp.colors.grey(now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds() + '.' + now.getMilliseconds()) + ']',
+			...msg
+		);
+	};
+
+	gulp.colors = chalk;
+
 	this.settings = {
 		futureTaskTries: 20,
 		futureTaskWait: 50,
+		taskStart: id => gulp.log(`Starting "${gulp.colors.cyan(id)}"...`),
+		taskEnd: (id, time) => gulp.log(`Finished "${gulp.colors.cyan(id)}" `, gulp.colors.grey(`(${time}ms)`)),
 	};
 
 	// gulp.task() {{{
@@ -79,7 +92,6 @@ function Gulpy() {
 			debug('Alias (existing task)', func);
 			wrapper = ()=> Promise.resolve(this.gulp.task(func)());
 			wrapper.displayName = func;
-			return chain.then(wrapper);
 		} else if (typeof func == 'string') { // Alias and task doesn't already exist
 			debug('Alias (future task)', func);
 			wrapper = ()=> new Promise((resolve, reject) => {
@@ -100,44 +112,45 @@ function Gulpy() {
 				setTimeout(checkExists, this.settings.futureTaskWait);
 			});
 			wrapper.displayName = func;
-			return chain.then(wrapper);
 		} else if (typeof func == 'function' && autopsy.identify(func) == 'async') {
 			debug('Wrap async func', func);
 			wrapper = ()=> func();
 			wrapper.displayName = '<async func>';
-			return chain.then(wrapper);
 		} else if (typeof func == 'function' && autopsy.identify(func) == 'plain') {
 			debug('Wrap plain func', func);
 			wrapper = ()=> Promise.resolve(func());
 			wrapper.displayName = '<plain func>';
-			return chain.then(wrapper);
 		} else if (typeof func == 'function' && autopsy.identify(func) == 'cb') {
 			debug('Wrap callback func', func);
 			wrapper = ()=> Promise.resolve(util.promisify(func)());
 			wrapper.displayName = '<callback func>';
-			return chain.then(wrapper);
 		} else if (func instanceof Promise) { // Promise
 			debug('Wrap promise', func);
 			wrapper = ()=> func;
 			wrapper.displayName = '<already-resolved promise>';
-			return chain.then(wrapper);
 		} else if (typeof func == 'function' || func instanceof Promise) { // Assume promise factory
 			debug('Wrap misc func (probably promise)', func);
 			wrapper = ()=> Promise.resolve(func());
 			wrapper.displayName = '<promise factory func>';
-			return chain.then(wrapper);
 		} else if (Array.isArray(func)) {
-			wrapper = Promise.all(
+			wrapper = ()=> Promise.all(
 				func.map(f =>
-					()=> gulp.run(f)
+					this.gulp.run(f)
 				)
 			);
 			wrapper.displayName = '<parallel items>';
-			return chain.then(wrapper);
 		} else {
 			debug('UNKNOWN FUNC TYPE', func);
 			throw new Error(`Unknown task run type: ${typeof func}`);
 		}
+
+		var startTime = Date.now();
+
+		return chain
+			.then(()=> this.settings.taskStart(wrapper.displayName))
+			.then(wrapper)
+			.then(()=> this.settings.taskEnd(wrapper.displayName, Date.now() - startTime));
+
 	}, Promise.resolve());
 	// }}}
 

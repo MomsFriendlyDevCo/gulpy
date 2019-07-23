@@ -8,7 +8,7 @@ describe('gulpy', ()=> {
 	before(()=> require('./setup'));
 
 	it('should look like the main gulp module', ()=> {
-		var excludeMethods = ['isGulpy', 'emit', 'gulp', 'mutate', 'off', 'on', 'once', 'run', 'settings', 'start'];
+		var excludeMethods = ['isGulpy', 'colors', 'emit', 'gulp', 'log', 'mutate', 'off', 'on', 'once', 'run', 'settings', 'start', 'wrapFuncs'];
 
 		expect(Object.keys(gulpy).sort().filter(m => !excludeMethods.includes(m))).to.be.deep.equal(Object.keys(gulp).sort().filter(m => !excludeMethods.includes(m)));
 	});
@@ -25,7 +25,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/callForward.gulp.js foo`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
 			})
 	);
 
@@ -33,7 +33,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/nonAsync.gulp.js foo`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
 			})
 	);
 
@@ -41,7 +41,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/chain.gulp.js`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
 			})
 	);
 
@@ -49,7 +49,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/event-finish.gulp.js`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo', 'Out:Finish']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar', 'Out:Finish']);
 			})
 	);
 
