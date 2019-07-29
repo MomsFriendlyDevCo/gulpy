@@ -15,6 +15,7 @@ Why?
 * **Task prerequisites** - Yes I know you can use `gulp.task(id, gulp.series(foo, bar, baz))` to show the execution order but if the last one of these is a function things get messy. I much prefer the `gulp.task(id, [prereqs...], func)` way of doing things
 * **Run-once tasks** - An easier way to specify that a task should be executed only once, even if called multiple times as a pre-requisite.
 * **Emit "finish" event for cleanup** - I've honestly no idea how [cleaning up after multiple tasks is not a problem to solve](https://github.com/gulpjs/gulp/issues/1275) but disconnecting from the database and so on should be handled properly
+* **Tidier task display** - Automatically hides all weird "Parallel", "Series" anonymous tasks unless `--verbose` is specified
 
 
 Installation & Usage

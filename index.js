@@ -3,6 +3,7 @@ var chalk = require('chalk');
 var debug = require('debug')('gulpy');
 var gulp = require('gulp');
 var util = require('util');
+var args = require('yargs').argv;
 
 function Gulpy() {
 	this.gulp = gulp; // Inherit the regular gulp instance into gulpy.gulp
@@ -106,7 +107,7 @@ function Gulpy() {
 						setTimeout(checkExists, this.settings.futureTaskWait);
 					} else { // Give up
 						debug('Given up trying to find future task alias', func);
-						reject(`Cannot find task alias "${func}" after ${this.settings.futureTaskTries} after waiting for a total of ${this.settings.futureTaskTries * this.settings.futureTaskTries}ms`);
+						reject(`Cannot find task alias "${func}" after ${this.settings.futureTaskTries} ticks waiting for a total of ${this.settings.futureTaskTries * this.settings.futureTaskTries}ms`);
 					}
 				};
 				setTimeout(checkExists, this.settings.futureTaskWait);
@@ -146,10 +147,12 @@ function Gulpy() {
 
 		var startTime = Date.now();
 
+		wrapper.showName = args.verbose || !/^<.*>$/.test(wrapper.displayName);
+
 		return chain
-			.then(()=> this.settings.taskStart(wrapper.displayName))
+			.then(()=> wrapper.showName && this.settings.taskStart(wrapper.displayName))
 			.then(wrapper)
-			.then(()=> this.settings.taskEnd(wrapper.displayName, Date.now() - startTime));
+			.then(()=> wrapper.showName && this.settings.taskEnd(wrapper.displayName, Date.now() - startTime));
 
 	}, Promise.resolve());
 	// }}}
