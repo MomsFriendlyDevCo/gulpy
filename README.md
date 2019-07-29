@@ -141,6 +141,16 @@ gulpy.isGulpy
 Always true, this can be used as a check to see if `gulpy.mutate()` has been called. If it has then `gulp.isGulpy` will also be true.
 
 
+gulpy.log(...msgs)
+------------------
+Log output using the same style used when rendering task start / ends.
+
+
+gulpy.colors
+------------
+[Chalk](https://github.com/chalk/chalk) instance.
+
+
 gulpy.mutate()
 --------------
 Overwrite the gulpy mutated functions in the `gulp`, effectively turning every `reuiqre('gulp')` call into `require('@momsfriendlydevco/gulpy')`.
@@ -186,10 +196,13 @@ Object of settings used by Gulpy.
 
 Available options:
 
-| Setting           | Type   | Default | Description                                                                          |
-|-------------------|--------|---------|--------------------------------------------------------------------------------------|
-| `futureTaskTries` | Number | `20`    | How many tries before giving up on finding a future task alias as-yet-to-be-declared |
-| `futureTaskWait`  | Number | `50`    | The millisecond wait between each future task alias attempt                          |
+| Setting             | Type     | Default   | Description                                                                            |
+|---------------------|----------|-----------|----------------------------------------------------------------------------------------|
+| `futureTaskTries`   | Number   | `20`      | How many tries before giving up on finding a future task alias as-yet-to-be-declared   |
+| `futureTaskWait`    | Number   | `50`      | The millisecond wait between each future task alias attempt                            |
+| `taskStart`         | Function | See code  | Called as `(task)` when a task starts, override to change logging                      |
+| `taskEnd`           | Function | See code  | Called as `(task)` when a task ends, override to change logging                        |
+
 
 
 

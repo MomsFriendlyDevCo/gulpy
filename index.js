@@ -23,8 +23,8 @@ function Gulpy() {
 	this.settings = {
 		futureTaskTries: 20,
 		futureTaskWait: 50,
-		taskStart: id => gulp.log(`Starting "${gulp.colors.cyan(id)}"...`),
-		taskEnd: (id, time) => gulp.log(`Finished "${gulp.colors.cyan(id)}" `, gulp.colors.grey(`(${time}ms)`)),
+		taskStart: task => gulp.log(`Starting "${gulp.colors.cyan(task.id)}"...` + (task.preDeps ? ' ' + gulp.colors.grey('(' + task.preDeps.join(' > ') + ')') : '')),
+		taskEnd: task => gulp.log(`Finished "${gulp.colors.cyan(task.id)}" `, gulp.colors.grey(`(${task.totalTime}ms)`)),
 	};
 
 	// gulp.task() {{{
@@ -89,6 +89,11 @@ function Gulpy() {
 	gulp.run = (...args) => args.reduce((chain, func) => {
 		var wrapper;
 
+		var meta;
+		if (args.length > 0 && typeof args[0] == 'object' && args[0].meta) { // Is the first arg a meta object? Remove it from the stream
+			meta = args.shift().meta;
+		}
+
 		if (typeof func == 'string' && this.gulp.task(func)) { // Alias and task exists
 			debug('Alias (existing task)', func);
 			wrapper = ()=> Promise.resolve(this.gulp.task(func)());
@@ -145,14 +150,19 @@ function Gulpy() {
 			throw new Error(`Unknown task run type: ${typeof func}`);
 		}
 
-		var startTime = Date.now();
-
 		wrapper.showName = args.verbose || !/^<.*>$/.test(wrapper.displayName);
 
+		var task = { // Compute what we will pass to the logger
+			id: wrapper.displayName,
+			startTime: Date.now(),
+			totalTime: undefined, // Calculated in end step
+			...meta
+		};
+
 		return chain
-			.then(()=> wrapper.showName && this.settings.taskStart(wrapper.displayName))
+			.then(()=> wrapper.showName && this.settings.taskStart(task))
 			.then(wrapper)
-			.then(()=> wrapper.showName && this.settings.taskEnd(wrapper.displayName, Date.now() - startTime));
+			.then(()=> wrapper.showName && this.settings.taskEnd({...task, totalTime: Date.now() - task.startTime}));
 
 	}, Promise.resolve());
 	// }}}
