@@ -25,7 +25,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/callForward.gulp.js foo`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
 			})
 	);
 
@@ -33,7 +33,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/nonAsync.gulp.js foo`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
 			})
 	);
 
@@ -41,7 +41,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/chain.gulp.js`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo']);
 			})
 	);
 
@@ -49,7 +49,7 @@ describe('gulpy', ()=> {
 		exec(`gulp -f ${__dirname}/data/event-finish.gulp.js`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
-				expect(lines).to.deep.equal(['Out:Baz', 'Out:Foo', 'Out:Bar', 'Out:Finish']);
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Bar', 'Out:Foo', 'Out:Finish']);
 			})
 	);
 
