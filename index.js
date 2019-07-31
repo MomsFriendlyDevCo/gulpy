@@ -24,7 +24,7 @@ function Gulpy() {
 		futureTaskTries: 20,
 		futureTaskWait: 50,
 		taskStart: task => gulp.log(`Starting "${gulp.colors.cyan(task.id)}"...` + (task.preDeps ? ' ' + gulp.colors.grey('(' + task.preDeps.join(' > ') + ')') : '')),
-		taskEnd: task => gulp.log(`Finished "${gulp.colors.cyan(task.id)}" `, gulp.colors.grey(`(${task.totalTime}ms)`)),
+		taskEnd: task => gulp.log(`Finished "${gulp.colors.cyan(task.id)}"`, gulp.colors.grey(`(${task.totalTime}ms)`)),
 	};
 
 	// gulp.task() {{{
