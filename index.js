@@ -124,7 +124,21 @@ function Gulpy() {
 			wrapper.displayName = '<async func>';
 		} else if (typeof func == 'function' && autopsy.identify(func) == 'plain') {
 			debug('Wrap plain func', func);
-			wrapper = ()=> Promise.resolve(func());
+			wrapper = ()=> Promise.resolve(func())
+				.then(res => {
+					if (res && res.on) { // Is an event emitter - bind to 'end' function and wait
+						debug('Wrap event-emitter output', res);
+						return new Promise(resolve =>
+							res.on('end', ()=> {
+								debug('event-emitter ended');
+								resolve(res);
+							})
+						);
+					} else {
+						return res;
+					}
+				})
+
 			wrapper.displayName = '<plain func>';
 		} else if (typeof func == 'function' && autopsy.identify(func) == 'cb') {
 			debug('Wrap callback func', func);

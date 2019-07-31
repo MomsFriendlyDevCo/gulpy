@@ -171,6 +171,7 @@ This function can take any number of the following arguments:
 * Callback functions
 * Plain functions
 * Array of any of the above (child items executed in parallel)
+* An event-emitter (include Gulp / Vinyl chains) - if an `.on()` function is found we wait for `end` to be signalled before continuing
 
 
 ```javascript
