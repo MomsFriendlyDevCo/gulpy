@@ -13,7 +13,7 @@ function Gulpy() {
 	gulp.log = (...msg) => {
 		var now = new Date();
 		console.log(
-			'[' + gulp.colors.grey(now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds() + '.' + now.getMilliseconds()) + ']',
+			'[' + gulp.colors.grey(('' + now.getHours()).padStart(2, '0') + ':' + ('' + now.getMinutes()).padStart(2, '0') + ':' + ('' + now.getSeconds()).padStart(2, '0') + '.' + ('' + now.getMilliseconds()).padStart(3, '0')) + ']',
 			...msg
 		);
 	};
