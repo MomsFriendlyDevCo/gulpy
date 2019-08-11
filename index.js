@@ -10,21 +10,21 @@ function Gulpy() {
 	this.isGulpy = true; // Marker so we know if the original gulp instance has already been mutated
 	Object.assign(this, gulp); // Act like gulp
 
-	gulp.log = (...msg) => {
+	this.log = (...msg) => {
 		var now = new Date();
 		console.log(
-			'[' + gulp.colors.grey(('' + now.getHours()).padStart(2, '0') + ':' + ('' + now.getMinutes()).padStart(2, '0') + ':' + ('' + now.getSeconds()).padStart(2, '0') + '.' + ('' + now.getMilliseconds()).padStart(3, '0')) + ']',
+			'[' + this.colors.grey(('' + now.getHours()).padStart(2, '0') + ':' + ('' + now.getMinutes()).padStart(2, '0') + ':' + ('' + now.getSeconds()).padStart(2, '0') + '.' + ('' + now.getMilliseconds()).padStart(3, '0')) + ']',
 			...msg
 		);
 	};
 
-	gulp.colors = chalk;
+	this.colors = chalk;
 
 	this.settings = {
 		futureTaskTries: 20,
 		futureTaskWait: 50,
-		taskStart: task => gulp.log(`Starting "${gulp.colors.cyan(task.id)}"...` + (task.preDeps ? ' ' + gulp.colors.grey('(' + task.preDeps.join(' > ') + ')') : '')),
-		taskEnd: task => gulp.log(`Finished "${gulp.colors.cyan(task.id)}"`, gulp.colors.grey(`(${task.totalTime}ms)`)),
+		taskStart: task => this.log(`Starting "${this.colors.cyan(task.id)}"...` + (task.preDeps ? ' ' + this.colors.grey('(' + task.preDeps.join(' > ') + ')') : '')),
+		taskEnd: task => this.log(`Finished "${this.colors.cyan(task.id)}"`, this.colors.grey(`(${task.totalTime}ms)`)),
 	};
 
 	// gulp.task() {{{
@@ -86,7 +86,7 @@ function Gulpy() {
 	* @param {string|function|function <Promise>} [args...] Functions to execute, arrays are resolved in parallel anything else is resolved in series
 	* @returns {Promise} A promise which resolves when the payload completes
 	*/
-	gulp.run = (...args) => args.reduce((chain, func) => {
+	this.run = (...args) => args.reduce((chain, func) => {
 		var wrapper;
 
 		var meta;
@@ -155,7 +155,7 @@ function Gulpy() {
 		} else if (Array.isArray(func)) {
 			wrapper = ()=> Promise.all(
 				func.map(f =>
-					this.gulp.run(f)
+					this.run(f)
 				)
 			);
 			wrapper.displayName = '<parallel items>';
@@ -182,9 +182,9 @@ function Gulpy() {
 	// }}}
 
 	// Wrap gulp.parallel() / gulp.series() / gulp.start() {{{
-	this.parallel = (...args) => ()=> this.gulp.run(args);
-	this.series = (...args) => ()=> this.gulp.run(...args);
-	gulp.start = (...args) => this.gulp.run(...args);
+	this.parallel = (...args) => ()=> this.run(args);
+	this.series = (...args) => ()=> this.run(...args);
+	this.start = (...args) => this.run(...args);
 	// }}}
 
 	// Event: finish {{{
