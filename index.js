@@ -112,7 +112,7 @@ function Gulpy() {
 						setTimeout(checkExists, this.settings.futureTaskWait);
 					} else { // Give up
 						debug('Given up trying to find future task alias', func);
-						reject(`Cannot find task alias "${func}" after ${this.settings.futureTaskTries} ticks waiting for a total of ${this.settings.futureTaskTries * this.settings.futureTaskTries}ms`);
+						reject(`Cannot find task alias "${func}" after ${this.settings.futureTaskTries} ticks (waited for a total of ${this.settings.futureTaskTries * this.settings.futureTaskTries}ms)`);
 					}
 				};
 				setTimeout(checkExists, this.settings.futureTaskWait);
