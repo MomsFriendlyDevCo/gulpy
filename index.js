@@ -10,7 +10,7 @@ function Gulpy() {
 	this.isGulpy = true; // Marker so we know if the original gulp instance has already been mutated
 	Object.assign(this, gulp); // Act like gulp
 
-	this.log = (...msg) => {
+	this.gulp.log = this.log = (...msg) => {
 		var now = new Date();
 		console.log(
 			'[' + this.colors.grey(('' + now.getHours()).padStart(2, '0') + ':' + ('' + now.getMinutes()).padStart(2, '0') + ':' + ('' + now.getSeconds()).padStart(2, '0') + '.' + ('' + now.getMilliseconds()).padStart(3, '0')) + ']',
@@ -18,7 +18,7 @@ function Gulpy() {
 		);
 	};
 
-	this.colors = chalk;
+	this.gulp.colors = this.colors = chalk;
 
 	this.settings = {
 		futureTaskTries: 20,
