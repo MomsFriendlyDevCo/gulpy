@@ -86,7 +86,7 @@ function Gulpy() {
 	* @param {string|function|function <Promise>} [args...] Functions to execute, arrays are resolved in parallel anything else is resolved in series
 	* @returns {Promise} A promise which resolves when the payload completes
 	*/
-	this.run = (...args) => args.reduce((chain, func) => {
+	this.gulp.run = this.run = (...args) => args.reduce((chain, func) => {
 		var wrapper;
 
 		var meta;
