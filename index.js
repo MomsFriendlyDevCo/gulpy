@@ -59,11 +59,12 @@ function Gulpy() {
 		var func = chain[chain.length-1];
 		if (typeof func != 'function') throw new Error('The last argument to gulp.task.once(id, [prereqs], func) must be a function');
 
-		var hasRun = false;
-		chain[chain.length-1] = async ()=> {
-			if (hasRun) return;
-			hasRun = true;
-			return func();
+		chain[chain.length-1] = ()=> {
+			if (func.oncePromise) { // Func already running - attach to its promise and wait
+				return func.oncePromise;
+			} else { // Func first run
+				return func.oncePromise = Promise.resolve(func());
+			}
 		};
 
 		return this.task(id, ...chain);

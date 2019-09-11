@@ -7,20 +7,29 @@ describe('gulp.task.once()', ()=> {
 
 	before(()=> require('./setup'));
 
-	it('should process simple prerequisites #1', ()=> {
+	it('should process simple prerequisites #1', ()=>
 		exec(`gulp -f ${__dirname}/data/once.gulp.js fooBar`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
 				expect(lines).to.deep.equal(['Out:Setup', 'Out:Foo', 'Out:Bar']);
 			})
-	});
+	);
 
-	it('should process simple prerequisites #2', ()=> {
+	it('should process simple prerequisites #2', ()=>
 		exec(`gulp -f ${__dirname}/data/once.gulp.js setupFooBar`)
 			.then(res => {
 				var lines = res.split('\n').filter(l => /^Out:/.test(l));
 				expect(lines).to.deep.equal(['Out:Setup', 'Out:Foo', 'Out:Bar']);
 			})
-	});
+	);
+
+
+	it('should execute "once" tasks and wait', ()=>
+		exec(`gulp -f ${__dirname}/data/once.gulp.js bazbazbazquz`)
+			.then(res => {
+				var lines = res.split('\n').filter(l => /^Out:/.test(l));
+				expect(lines).to.deep.equal(['Out:Baz', 'Out:Quz']);
+			})
+	);
 
 });
