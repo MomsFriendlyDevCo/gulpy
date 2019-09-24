@@ -1,6 +1,7 @@
 var autopsy = require('@momsfriendlydevco/autopsy');
 var chalk = require('chalk');
 var debug = require('debug')('gulpy');
+var eventer = require('@momsfriendlydevco/eventer');
 var gulp = require('gulp');
 var util = require('util');
 var args = require('yargs').argv;
@@ -9,6 +10,8 @@ function Gulpy() {
 	this.gulp = gulp; // Inherit the regular gulp instance into gulpy.gulp
 	this.isGulpy = true; // Marker so we know if the original gulp instance has already been mutated
 	Object.assign(this, gulp); // Act like gulp
+
+	this.running = []; // Collection of tasks that are running
 
 	this.gulp.log = this.log = (...msg) => {
 		var now = new Date();
@@ -175,9 +178,14 @@ function Gulpy() {
 		};
 
 		return chain
+			.then(()=> this.running.push(task) == 1 && this.emit('start')) // Push task onto running stack, emit 'start' if its the first
 			.then(()=> wrapper.showName && this.settings.taskStart(task))
+			.then(()=> this.emit('taskStart', task))
 			.then(wrapper)
-			.then(()=> wrapper.showName && this.settings.taskEnd({...task, totalTime: Date.now() - task.startTime}));
+			.then(()=> wrapper.showName && this.settings.taskEnd({...task, totalTime: Date.now() - task.startTime}))
+			.then(()=> this.running.splice(this.running.findIndex(t => t != task), 1)) // Remove task from stack
+			.then(()=> this.emit('taskEnd', task))
+			.then(()=> !this.running.length && this.emit('finish')) // Emit 'finish' if stack is empty
 
 	}, Promise.resolve());
 	// }}}
@@ -188,22 +196,7 @@ function Gulpy() {
 	this.start = (...args) => this.run(...args);
 	// }}}
 
-	// Event: finish {{{
-	var running = new Set();
-	var runningTimer;
-	this.gulp.on('start', task => running.add(task.uid));
-	this.gulp.on('stop', task => {
-		running.delete(task.uid);
-
-		if (runningTimer) clearTimeout(runningTimer);
-		runningTimer = setTimeout(()=> { // Queue on next tick so we're sure Gulp has flushed
-			if (running.size) return; // Another task has waited within the tick
-			this.emit('finish')
-		}, 1000) // FIXME: This wait is way too long but required as some processes close off resources like DB connections before they should
-	});
-
-	['on', 'once', 'off', 'emit'].forEach(m => this[m] = this.gulp[m]);
-	// }}}
+	eventer.extend(this);
 
 	return this;
 };

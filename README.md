@@ -121,13 +121,22 @@ gulp.task('build', ['foo', 'bar']); // 'setup' runs only once, followed by 'foo'
 ```
 
 
-Event: Finish
--------------
-Gulpy adds the universal "finish" event to signal that all tasks have completed and that cleanup can be conducted.
+Event management
+----------------
+Gulpy uses [eventer](https://github.com/MomsFriendlyDevCo/eventer) to manage promisable events at each stage of the lifecycle.
 
 ```javascript
 gulp.on('finish', ()=> ...)
 ```
+
+Supported events are:
+
+| Event       | Args     | Description                                                                 |
+|-------------|----------|-----------------------------------------------------------------------------|
+| `start`     | `()`     | Emitted on the very first task (or when the task buffer is empty)           |
+| `taskStart` | `(task)` | Emitted at the start of each new task with the task object                  |
+| `taskEnd`   | `(task)` | Emitted at the end of a task with the task object                           |
+| `finish`    | `()`     | Emitted at the very end of the task stack (or when the task buffer empties) |
 
 
 API
