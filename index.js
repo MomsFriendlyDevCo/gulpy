@@ -28,6 +28,8 @@ function Gulpy() {
 		futureTaskWait: 50,
 		taskStart: task => this.log(`Starting "${this.colors.cyan(task.id)}"...` + (task.preDeps ? ' ' + this.colors.grey('(' + task.preDeps.join(' > ') + ')') : '')),
 		taskEnd: task => this.log(`Finished "${this.colors.cyan(task.id)}"`, this.colors.grey(`(${task.totalTime}ms)`)),
+		logging: true,
+		loggingeOnce: false,
 	};
 
 	// gulp.task() {{{
@@ -62,6 +64,8 @@ function Gulpy() {
 		var func = chain[chain.length-1];
 		if (typeof func != 'function') throw new Error('The last argument to gulp.task.once(id, [prereqs], func) must be a function');
 
+		this.task.onceRun.add(id); // Add to once function buffers
+
 		chain[chain.length-1] = ()=> {
 			if (func.oncePromise) { // Func already running - attach to its promise and wait
 				return func.oncePromise;
@@ -72,6 +76,13 @@ function Gulpy() {
 
 		return this.task(id, ...chain);
 	};
+
+
+	/**
+	* Storage for all TaskID's that we know run once and have already started /finished execution
+	* @var {Set}
+	*/
+	this.task.onceRun = new Set();
 	// }}}
 
 	// gulp.run() {{{
@@ -177,12 +188,16 @@ function Gulpy() {
 			...meta
 		};
 
+		// Is task a once-only and has it already begun / finished
+		var logTask = (wrapper.showName && this.settings.logging && this.settings.loggingOnce) // Always log
+			|| (wrapper.showName && this.settings.logging && !this.task.onceRun.has(task.id)) // Basic logging + task is not marked as 'once'
+
 		return chain
 			.then(()=> this.running.push(task) == 1 && this.emit('start')) // Push task onto running stack, emit 'start' if its the first
-			.then(()=> wrapper.showName && this.settings.taskStart(task))
+			.then(()=> logTask && this.settings.taskStart(task))
 			.then(()=> this.emit('taskStart', task))
 			.then(wrapper)
-			.then(()=> wrapper.showName && this.settings.taskEnd({...task, totalTime: Date.now() - task.startTime}))
+			.then(()=> logTask && this.settings.taskEnd({...task, totalTime: Date.now() - task.startTime}))
 			.then(()=> this.running.splice(this.running.findIndex(t => t != task), 1)) // Remove task from stack
 			.then(()=> this.emit('taskEnd', task))
 			.then(()=> !this.running.length && this.emit('finish')) // Emit 'finish' if stack is empty

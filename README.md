@@ -210,6 +210,8 @@ Available options:
 |---------------------|----------|-----------|----------------------------------------------------------------------------------------|
 | `futureTaskTries`   | Number   | `20`      | How many tries before giving up on finding a future task alias as-yet-to-be-declared   |
 | `futureTaskWait`    | Number   | `50`      | The millisecond wait between each future task alias attempt                            |
+| `logging`           | Boolean  | `true`    | Whether to call any of the log functions when running tasks                            |
+| `loggingOnce`       | Boolean  | `false`   | Whether to log any tasks marked as `.once()`, these are off by default as they are typically utility functions |
 | `taskStart`         | Function | See code  | Called as `(task)` when a task starts, override to change logging                      |
 | `taskEnd`           | Function | See code  | Called as `(task)` when a task ends, override to change logging                        |
 
