@@ -11,6 +11,8 @@ function Gulpy() {
 	this.isGulpy = true; // Marker so we know if the original gulp instance has already been mutated
 	Object.assign(this, gulp); // Act like gulp
 
+	if (!this.gulp.task) throw new Error('Cannot find gulp.task - your gulp version is probably out of date');
+
 	this.running = []; // Collection of tasks that are running
 
 	this.gulp.log = this.log = (...msg) => {
