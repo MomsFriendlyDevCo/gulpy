@@ -1,6 +1,6 @@
 {
   "name": "@momsfriendlydevco/gulpy",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A series of fixes for small irritations in Gulp",
   "main": "index.js",
   "scripts": {
@@ -17,16 +17,16 @@
   },
   "homepage": "https://github.com/MomsFriendlyDevCo/gulpy#readme",
   "devDependencies": {
-    "@momsfriendlydevco/exec": "^1.4.3",
-    "chai": "^4.2.0",
+    "@momsfriendlydevco/exec": "^1.5.2",
+    "chai": "^4.3.4",
     "gulp": "^4.0.2",
-    "mocha": "^6.2.0",
-    "mocha-logger": "^1.0.6"
+    "mocha": "^8.3.2",
+    "mocha-logger": "^1.0.7"
   },
   "dependencies": {
     "@momsfriendlydevco/autopsy": "^1.0.0",
-    "@momsfriendlydevco/eventer": "^1.1.6",
-    "debug": "^4.1.1",
-    "yargs": "^14.0.0"
+    "@momsfriendlydevco/eventer": "^1.5.1",
+    "debug": "^4.3.1",
+    "yargs": "^16.2.0"
   }
 }
