@@ -104,6 +104,7 @@ function Gulpy() {
 	* @returns {Promise} A promise which resolves when the payload completes
 	*/
 	this.gulp.run = this.run = (...args) => args.reduce((chain, func) => {
+		debug('Gulp running', args, chain);
 		var wrapper;
 
 		var meta;
@@ -197,12 +198,21 @@ function Gulpy() {
 		return chain
 			.then(()=> this.running.push(task) == 1 && this.emit('start')) // Push task onto running stack, emit 'start' if its the first
 			.then(()=> logTask && this.settings.taskStart(task))
+			.then(() => debug('Tasks remaining', this.running))
 			.then(()=> this.emit('taskStart', task))
 			.then(wrapper)
 			.then(()=> logTask && this.settings.taskEnd({...task, totalTime: Date.now() - task.startTime}))
+			.then(() => debug('Removing task', this.running.find(t => t != task)))
 			.then(()=> this.running.splice(this.running.findIndex(t => t != task), 1)) // Remove task from stack
 			.then(()=> this.emit('taskEnd', task))
-			.then(()=> !this.running.length && this.emit('finish')) // Emit 'finish' if stack is empty
+			.then(() => debug('Tasks remaining', this.running))
+			.then(()=> {
+				// TODO: Could we implement a timeout here?
+				if (!this.running.length) {
+					debug('Emitting "finish" event');
+					this.emit('finish');
+				}
+			}) // Emit 'finish' if stack is empty
 
 	}, Promise.resolve());
 	// }}}
@@ -213,6 +223,7 @@ function Gulpy() {
 	this.start = (...args) => this.run(...args);
 	// }}}
 
+	// FIXME: Why does extending in this way not result firing of "finish" events attached to instances imported with `require('gulp')`?
 	eventer.extend(this);
 
 	return this;

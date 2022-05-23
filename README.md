@@ -162,7 +162,7 @@ gulpy.colors
 
 gulpy.mutate()
 --------------
-Overwrite the gulpy mutated functions in the `gulp`, effectively turning every `reuiqre('gulp')` call into `require('@momsfriendlydevco/gulpy')`.
+Overwrite the gulpy mutated functions in the `gulp`, effectively turning every `require('gulp')` call into `require('@momsfriendlydevco/gulpy')`.
 Only use this if you know what you are doing as this may have side-effects with downstream modules.
 
 
