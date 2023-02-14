@@ -217,6 +217,24 @@ function Gulpy() {
 	}, Promise.resolve());
 	// }}}
 
+	// gulp.userTask() {{{
+	/**
+	* Check if a task was specifically requested by the user - via the CLI
+	* @param {string} task Task to check for user request
+	* @returns {boolean} True if the task was specifically requested
+	*
+	* @example
+	* If run as `gulp foo` - gulp.userTask('foo') //= true
+	* If run as `gulp bar` - gulp.userTask('bar') //= false (even if "bar" calls "foo")
+	*/
+	this.hasUserTask = task => {
+		return new Set(
+			process.argv.slice(2)
+				.filter(a => !a.startsWith('-'))
+		).has(task);
+	};
+	// }}}
+
 	// Wrap gulp.parallel() / gulp.series() / gulp.start() {{{
 	this.parallel = (...args) => ()=> this.run(args);
 	this.series = (...args) => ()=> this.run(...args);

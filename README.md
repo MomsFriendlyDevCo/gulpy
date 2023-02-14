@@ -200,6 +200,16 @@ gulpy.start(...tasks)
 Alias of `gulp.run()`
 
 
+gulpy.hasUserTask(task)
+-----------------------
+Check if `task` was specifically requested by the user - via the CLI.
+
+Examples:
+
+* If run with `gulp foo` then `gulpy.hasUserTask('foo') //=true`
+* If run with `gulp bar` then `gulpy.hasUserTask('foo') //=false` (even if bar calls 'foo' internally)
+
+
 gulpy.settings
 --------------
 Object of settings used by Gulpy.
